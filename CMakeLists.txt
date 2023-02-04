@@ -5,6 +5,7 @@ project(uva-json)
 
 add_library(uva-json
 	${CMAKE_CURRENT_LIST_DIR}/src/json.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/web_token.cpp
 )
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})

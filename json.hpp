@@ -4,17 +4,10 @@
 
 namespace uva
 {   
-    class json
+    namespace json
     {
-    private:
-        var m_values;
-    public:
-        json(std::map<var, var>&& values);
-    public:
-        std::string enconde() const;
-    public:
-        static std::string enconde(const var& values);
-        static var decode(const std::string& text);
-    };
+        std::string enconde(const var& values);
+        var decode(const std::string& text);
+    }; // namespace json
     
 }; // namespace uva

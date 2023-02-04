@@ -4,15 +4,6 @@
 
 #define JSON_BUFFR_SIZE 512
 
-uva::json::json(std::map<var, var>&& values)
-{
-    m_values = std::forward<std::map<var, var>&&>(values);
-}
-
-std::string uva::json::enconde() const
-{
-    return enconde(m_values);
-}
 
 void encode_var(const var& value, std::string& buffer)
 {
@@ -61,7 +52,7 @@ void encode_var(const var& value, std::string& buffer)
             buffer.push_back('"');
             buffer.push_back(':');
 
-             encode_var(pair.second, buffer);
+            encode_var(pair.second, buffer);
 
             if(index < count-1)
             {
