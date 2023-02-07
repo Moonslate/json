@@ -180,7 +180,14 @@ var uva::json::decode(const std::string& text)
                     }
                 } else {
                     if(!isdigit(text_view[0])) {
-                        THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
+                        const std::string n = "null";
+                        if(text_view.starts_with(n)) {
+                            map.insert({ std::string(key), null });
+                            text_view.remove_prefix(n.size());
+                            break;
+                        } else {
+                            THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
+                        }
                     }
                 }
 
@@ -188,10 +195,10 @@ var uva::json::decode(const std::string& text)
                 text_view.remove_prefix(1);
             }
 
-            if(is_double) {
+            if(!str.empty() && is_double) {
                 double d = std::stod(str);
                 map.insert({std::string(key), is_negative ? (d * -1) : d});
-            } else {
+            } else if (!str.empty()) {
                 size_t i = std::stol(str);
                 map.insert({std::string(key), is_negative ? (i * -1) : i});
             }
