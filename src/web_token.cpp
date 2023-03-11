@@ -17,13 +17,14 @@ std::string uva::json::web_token::enconde(const std::map<var, var> &values, cons
     std::string token = header;
     token.push_back('.');
     token += base64_json(values);
-
+#ifdef __UVA_OPENSSL_FOUND
     uva::binary::binary_uint256_t sha256 = uva::binary::hmac_sha256(token, secret);
     std::string signature = uva::binary::encode_base64(sha256, false);
 
     token.reserve(signature.size()+1);
     token.push_back('.');
     token += signature;
+#endif
 
     return token;
 }
