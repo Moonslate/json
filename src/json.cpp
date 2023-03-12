@@ -52,8 +52,18 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
         buffer.push_back(']');
     }
     else if(value.type == var::var_type::map) {
+        indentation_level++;
         auto map = value.as<var::var_type::map>();
-        buffer.push_back('{');
+
+        if(pretty) {
+            if(buffer.size()) {
+                buffer.push_back(' ');
+            }
+            buffer.push_back('{');
+            buffer.push_back('\n');
+        } else {
+            buffer.push_back('{');
+        }
 
         size_t index = 0;
         size_t count = map.size();
@@ -68,19 +78,35 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
             //TODO 
             //escape unsafe characters
 
+            if(pretty) {
+                encode_indentation(buffer);
+            }
+
             buffer.push_back('"');
             buffer += pair.first.as<var::var_type::string>();
             buffer.push_back('"');
             buffer.push_back(':');
 
-            encode_var(pair.second, buffer);
+            encode_var(pair.second, buffer, pretty);
 
             if(index < count-1)
             {
                 buffer.push_back(',');
             }
 
+            if(pretty) {
+                buffer.push_back('\n');
+            }
+
             index++;
+        }
+
+        if(pretty) {
+            if(indentation_level) {
+                indentation_level--;
+            }
+            
+            encode_indentation(buffer);
         }
 
         buffer.push_back('}');
