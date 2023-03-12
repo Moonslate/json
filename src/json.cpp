@@ -4,8 +4,29 @@
 
 #define JSON_BUFFR_SIZE 512
 
+static size_t indentation_level = 0;
+#define INDENTATION_SIZE 1
 
-void encode_var(const var& value, std::string& buffer)
+void encode_indentation(std::string& buffer)
+{
+    static std::string indentation_string;
+
+    if(indentation_string.size() > indentation_level*INDENTATION_SIZE) {
+        indentation_string.resize(indentation_level*INDENTATION_SIZE);
+    } else {
+        indentation_string.resize(indentation_level*INDENTATION_SIZE, '\t');
+    }
+
+    buffer.append(indentation_string);
+}
+
+void json_pretty_begin_object(std::string& buffer)
+{
+    buffer.push_back('\n');
+    encode_indentation(buffer);
+}
+
+void encode_var(const var& value, std::string& buffer, bool pretty = false)
 {
     if(value.type == var::var_type::string)
     {
@@ -18,7 +39,7 @@ void encode_var(const var& value, std::string& buffer)
         size_t count = value.size();
 
         for(size_t i = 0; i < count; ++i) {
-            encode_var(value[i], buffer);
+            encode_var(value[i], buffer, pretty);
 
             if(i < count-1)
             {
@@ -69,12 +90,14 @@ void encode_var(const var& value, std::string& buffer)
     }
 }
 
-std::string uva::json::enconde(const var& values)
+std::string uva::json::enconde(const var& values, bool pretty)
 {
+    indentation_level = 0;
+
     std::string buffer;
     buffer.reserve(512);
     //recurse loop in values
-    encode_var(values, buffer);
+    encode_var(values, buffer, pretty);
 
     return buffer;
 }
