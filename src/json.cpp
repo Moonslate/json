@@ -30,9 +30,7 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
 {
     if(value.type == var::var_type::string)
     {
-        buffer.push_back('"');
-        buffer += value.as<var::var_type::string>();
-        buffer.push_back('"');
+        buffer.append(value.to_typed_s());
     } else if(value.type == var::var_type::array)
     { 
         buffer.push_back('[');
@@ -74,10 +72,7 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
             {
                 throw std::runtime_error(std::format("error: cannot generate JSON entry with key of type '{}'", pair.first.type));
             }
-
-            //TODO 
-            //escape unsafe characters
-
+            
             if(pretty) {
                 encode_indentation(buffer);
             }
