@@ -82,9 +82,8 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
                 encode_indentation(buffer);
             }
 
-            buffer.push_back('"');
-            buffer += pair.first.as<var::var_type::string>();
-            buffer.push_back('"');
+            encode_var(pair.first, buffer, pretty);
+
             buffer.push_back(':');
 
             encode_var(pair.second, buffer, pretty);
