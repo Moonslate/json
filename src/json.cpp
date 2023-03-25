@@ -106,7 +106,7 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
         buffer.push_back('}');
     }
     else {
-        buffer += value.to_s();
+        buffer += value.to_typed_s();
     }
 }
 
