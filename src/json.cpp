@@ -158,7 +158,7 @@ var json_parse_array(std::string_view& text_view, const char* begin);
 
 var json_parse_value(std::string_view& text_view, const char* begin)
 {
-    if(text_view[0] == '\'' || text_view[0] == '"') {
+    if(text_view[0] == '"') {
         std::string_view value = extract_string(text_view);
         return std::string(value);
     } else if(text_view[0] == '[')
