@@ -169,6 +169,16 @@ var json_parse_value(std::string_view& text_view, const char* begin)
     {
         return json_parse_object(text_view, begin);
     }
+    else if(text_view.starts_with("true"))
+    {
+        text_view.remove_prefix(4);
+        return true;
+    }
+    else if(text_view.starts_with("false"))
+    {
+        text_view.remove_prefix(5);
+        return false;
+    }
     else
     {
         bool is_negative = false;
