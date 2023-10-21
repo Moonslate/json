@@ -28,10 +28,10 @@ void json_pretty_begin_object(std::string& buffer)
 
 void encode_var(const var& value, std::string& buffer, bool pretty = false)
 {
-    if(value.type == var::var_type::string)
+    if(value.is_a<var::string>())
     {
         buffer.append(value.to_typed_s());
-    } else if(value.type == var::var_type::array)
+    } else if(value.is_a<var::array>())
     { 
         buffer.push_back('[');
         size_t count = value.size();
@@ -49,9 +49,9 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
 
         buffer.push_back(']');
     }
-    else if(value.type == var::var_type::map) {
+    else if(value.is_a<var::map>()) {
         indentation_level++;
-        auto map = value.as<var::var_type::map>();
+        auto map = value.as<var::map>();
 
         if(pretty) {
             if(buffer.size()) {
@@ -68,7 +68,7 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
 
         for(const auto& pair : map)
         {
-            if(pair.first.type != var::var_type::string)
+            if(!pair.first.is_a<var::string>())
             {
                 throw std::runtime_error(std::format("error: cannot generate JSON entry with key of type '{}'", pair.first.type));
             }
