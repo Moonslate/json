@@ -1,6 +1,5 @@
-#include "json.hpp"
-
-#include <core.hpp>
+#include <uva/json.hpp>
+#include <uva/core.hpp>
 
 #define JSON_BUFFR_SIZE 512
 
