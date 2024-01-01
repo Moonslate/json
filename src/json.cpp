@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <uva/json.hpp>
 #include <uva/core.hpp>
 
@@ -121,6 +123,19 @@ std::string uva::json::enconde(const var& values, bool pretty)
     return buffer;
 }
 
+void uva::json::encode(const var& values, const std::filesystem::path& path)
+{
+    std::string text_json = enconde(values, true);
+
+    std::ofstream stream(path, std::ios::binary);
+
+    if(!stream.is_open()) {
+        throw std::runtime_error("cannot open output file");
+    }
+
+    stream.write(text_json.data(), text_json.size());
+}
+
 void next_non_white_space(std::string_view& sv)
 {
     while(sv.size() && isspace(sv[0]))
@@ -157,9 +172,11 @@ var json_parse_array(std::string_view& text_view, const char* begin);
 
 var json_parse_value(std::string_view& text_view, const char* begin)
 {
+    //todo switch
     if(text_view[0] == '"') {
         std::string_view value = extract_string(text_view);
-        return std::string(value);
+
+        return uva::string::unescape<char>(value);
     } else if(text_view[0] == '[')
     {
         return json_parse_array(text_view, begin);
@@ -168,6 +185,7 @@ var json_parse_value(std::string_view& text_view, const char* begin)
     {
         return json_parse_object(text_view, begin);
     }
+    //todo: map
     else if(text_view.starts_with("true"))
     {
         text_view.remove_prefix(4);
@@ -177,6 +195,11 @@ var json_parse_value(std::string_view& text_view, const char* begin)
     {
         text_view.remove_prefix(5);
         return false;
+    }
+    else if(text_view.starts_with("null"))
+    {
+        text_view.remove_prefix(4);
+        return null;
     }
     else
     {
@@ -361,4 +384,26 @@ var uva::json::decode(const std::string& text)
     }
 
     return json;
+}
+var uva::json::decode(const std::filesystem::path &path)
+{
+    std::string text;
+    {
+        std::ifstream stream(path, std::ios::binary);
+
+        if(!stream.is_open()) {
+            throw std::runtime_error("cannot open input file");
+        }
+
+        stream.seekg(0, std::ios::end);
+
+        auto file_len = stream.tellg();
+
+        stream.seekg(0, std::ios::beg);
+
+        text.resize(file_len);
+
+        stream.read(text.data(), file_len);
+    }
+    return uva::json::decode(text);
 }
