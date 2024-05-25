@@ -50,9 +50,9 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
 
         buffer.push_back(']');
     }
-    else if(value.is_a<var::map>()) {
+    else if(value.is_a<var::dictionary>()) {
         indentation_level++;
-        auto map = value.as<var::map>();
+        auto map = value.as<var::dictionary>();
 
         if(pretty) {
             if(buffer.size()) {
@@ -69,18 +69,19 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
 
         for(const auto& pair : map)
         {
-            if(!pair.first.is_a<var::string>())
-            {
-                throw std::runtime_error(std::format("error: cannot generate JSON entry with key of type '{}'", pair.first.type));
-            }
-            
             if(pretty) {
                 encode_indentation(buffer);
             }
 
-            encode_var(pair.first, buffer, pretty);
+            buffer.push_back('\"');
+            buffer.append(pair.first);
+            buffer.push_back('\"');
 
             buffer.push_back(':');
+
+            if(pretty) {
+                buffer.push_back(' ');
+            }
 
             encode_var(pair.second, buffer, pretty);
 
@@ -302,7 +303,7 @@ var json_parse_array(std::string_view& text_view, const char* begin)
 
 var json_parse_object(std::string_view& text_view, const char* begin)
 {
-    std::map<var, var> map;
+    std::unordered_map<std::string, var> map;
 
     if(text_view.empty()) {
         return map;
@@ -342,7 +343,7 @@ var json_parse_object(std::string_view& text_view, const char* begin)
 
         var value = json_parse_value(text_view, begin);
 
-        map.insert({var(std::move(std::string(key))), var(std::move(value))});
+        map.insert({std::string(key), var(std::move(value))});
 
         next_non_white_space(text_view);
 
