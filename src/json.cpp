@@ -318,49 +318,52 @@ var json_parse_object(std::string_view& text_view, const char* begin)
     text_view.remove_prefix(1);
     next_non_white_space(text_view);
 
-    while(text_view.size())
-    {
-        THROW_UNEXPECTED_END_OF_INPUT();
+    if(!text_view.starts_with('}')) {
 
-        if(!text_view.starts_with('\'') && !text_view.starts_with('\"')) {
-            THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
-        }
+        while(text_view.size())
+        {
+            THROW_UNEXPECTED_END_OF_INPUT();
 
-        std::string_view key = extract_string(text_view);
-        
-        next_non_white_space(text_view);
+            if(!text_view.starts_with('\'') && !text_view.starts_with('\"')) {
+                THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
+            }
 
-        THROW_UNEXPECTED_END_OF_INPUT();
+            std::string_view key = extract_string(text_view);
+            
+            next_non_white_space(text_view);
 
-        if(!text_view.starts_with(':')) {
-            THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
-        }
+            THROW_UNEXPECTED_END_OF_INPUT();
 
-        text_view.remove_prefix(1);
-        next_non_white_space(text_view);
+            if(!text_view.starts_with(':')) {
+                THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
+            }
 
-        THROW_UNEXPECTED_END_OF_INPUT();
-
-        var value = json_parse_value(text_view, begin);
-
-        map.insert({std::string(key), var(std::move(value))});
-
-        next_non_white_space(text_view);
-
-        if(text_view.starts_with('}')) {
-            break;
-        }
-
-        if(text_view.starts_with(',')) {
             text_view.remove_prefix(1);
             next_non_white_space(text_view);
-            continue;
+
+            THROW_UNEXPECTED_END_OF_INPUT();
+
+            var value = json_parse_value(text_view, begin);
+
+            map.insert({std::string(key), var(std::move(value))});
+
+            next_non_white_space(text_view);
+
+            if(text_view.starts_with('}')) {
+                break;
+            }
+
+            if(text_view.starts_with(',')) {
+                text_view.remove_prefix(1);
+                next_non_white_space(text_view);
+                continue;
+            }
+
+            THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
         }
 
-        THROW_UNEXPECTED_TOKEN_AT_THIS_LOCATION();
+        next_non_white_space(text_view);
     }
-
-    next_non_white_space(text_view);
 
     if(!text_view.starts_with('}')) {
         THROW_UNEXPECTED_END_OF_INPUT();
