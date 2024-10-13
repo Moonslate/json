@@ -51,8 +51,9 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
         buffer.push_back(']');
     }
     else if(value.is_a<var::dictionary>()) {
-        indentation_level++;
         auto map = value.as<var::dictionary>();
+
+        indentation_level++;
 
         if(pretty) {
             if(buffer.size()) {
@@ -303,7 +304,8 @@ var json_parse_array(std::string_view& text_view, const char* begin)
 
 var json_parse_object(std::string_view& text_view, const char* begin)
 {
-    std::unordered_map<std::string, var> map;
+    var dictionary = uva::core::var::dictionary();
+    var::dictionary_type& map = dictionary.as<var::dictionary>();
 
     if(text_view.empty()) {
         return map;
@@ -371,7 +373,7 @@ var json_parse_object(std::string_view& text_view, const char* begin)
 
     text_view.remove_prefix(1);
 
-    return map;
+    return dictionary;
 }
 
 var uva::json::decode(const std::string& text)
