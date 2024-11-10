@@ -34,11 +34,13 @@ void encode_var(const var& value, std::string& buffer, bool pretty = false)
         buffer.append(value.to_typed_s());
     } else if(value.is_a<var::array>())
     { 
+        var::array_type array = value.as<var::array>();
         buffer.push_back('[');
-        size_t count = value.size();
+        
+        size_t count = array.size();
 
         for(size_t i = 0; i < count; ++i) {
-            encode_var(value[i], buffer, pretty);
+            encode_var(array[i], buffer, pretty);
 
             if(i < count-1)
             {
