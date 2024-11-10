@@ -253,6 +253,8 @@ var json_parse_value(std::string_view& text_view, const char* begin)
             return is_negative ? (i * -1) : i;
         }
     }
+
+    throw std::runtime_error("failed to parse json: unexpected token");
 }
 
 var json_parse_array(std::string_view& text_view, const char* begin)
