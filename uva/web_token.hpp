@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core.hpp>
+#include <uva/core.hpp>
 
 namespace uva
 {   
@@ -9,7 +9,7 @@ namespace uva
         namespace web_token
         {
             std::string enconde(const std::map<var, var>& values, const std::string& secret);
-            bool decode(const std::string& text, const std::string& secret, var& output);
+            bool decode(const std::string& text, var& output);
         };
     }; // namespace json
     
